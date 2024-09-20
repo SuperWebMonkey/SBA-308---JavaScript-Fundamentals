@@ -96,6 +96,16 @@ function getLearnerData(course, ag, submissions) {
   return result;
 }
 
+// compare the submission date and dueDate
+function compareDate(submitDate, dueDate) {
+  return submitDate < dueDate;
+}
+
+// find the point deduction
+function deductPoints(totalPoints) {
+  return totalPoints - 0.1 * totalPoints;
+}
+
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
 console.log(result);
