@@ -1,3 +1,7 @@
+/**
+ * HW:
+ */
+
 // The provided course information.
 const CourseInfo = {
   id: 451,
@@ -76,7 +80,25 @@ const LearnerSubmissions = [
   },
 ];
 
+// main function where most of the code will be
+function main() {}
+
+// main function
 function getLearnerData(course, ag, submissions) {
+  let earnedPoints = 0;
+  let totalPoints = 0;
+  let subLen = submissions.length;
+  let subObjLen = 0;
+
+  // Loop over the ary of objects
+  for (let i = 0; i < subLen; i++) {
+    let obj = submissions[i]; // object in ary
+    let objLen = Object.keys(obj).length; // length of each object
+    // console.log("object length", objLen);
+
+    for (let j = 0; j < objLen; j++) {}
+  }
+
   // here, we would process this data to achieve the desired result.
   const result = [
     {
@@ -96,7 +118,7 @@ function getLearnerData(course, ag, submissions) {
   return result;
 }
 
-//
+// get the grade average across all assignments
 function gradeAverage(pointsEarned, maxPoints) {
   return Math.round(pointsEarned / maxPoints, 2);
 }
@@ -111,6 +133,10 @@ function deductPoints(totalPoints) {
   return totalPoints - 0.1 * totalPoints;
 }
 
+// error handling
+function errorHandling() {}
+
+// running code
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
 console.log(result);
