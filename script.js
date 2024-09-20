@@ -89,6 +89,13 @@ function getLearnerData(course, ag, submissions) {
   let totalPoints = 0;
   let subLen = submissions.length;
   let subObjLen = 0;
+  let assignmentsObj = AssignmentGroup.assignments;
+
+  // testing out objects
+  console.log("assignment object:", assignmentsObj[0].id);
+  let assignmentObjectLen = assignmentsObj.length;
+  let courseIdAry = [];
+  let submissionAry = [];
 
   // Loop over the ary of objects
   for (let i = 0; i < subLen; i++) {
@@ -134,7 +141,16 @@ function deductPoints(totalPoints) {
 }
 
 // error handling
-function errorHandling() {}
+function errorHandling(points_possible) {
+  try {
+    if (points_possible <= 0) {
+      throw new Error("Points cannot be at or below 0.");
+    }
+  } catch (e) {
+    console.log(e);
+  } finally {
+  }
+}
 
 // running code
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
