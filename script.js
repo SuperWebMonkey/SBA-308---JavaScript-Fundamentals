@@ -96,9 +96,14 @@ function getLearnerData(course, ag, submissions) {
   return result;
 }
 
+//
+function gradeAverage(pointsEarned, maxPoints) {
+  return Math.round(pointsEarned / maxPoints, 2);
+}
+
 // compare the submission date and dueDate
 function compareDate(submitDate, dueDate) {
-  return submitDate < dueDate;
+  return submitDate > dueDate;
 }
 
 // find the point deduction
