@@ -1,5 +1,5 @@
 /**
- * HW:
+ * HW: JS Basics
  */
 
 // The provided course information.
@@ -80,16 +80,13 @@ const LearnerSubmissions = [
   },
 ];
 
-// main function where most of the code will be
-function main() {}
-
-// main function
+// main function that returns an obj that contains student data
 function getLearnerData(course, ag, submissions) {
-  let earnedPoints = 0;
-  let totalPoints = 0;
   let subLen = submissions.length;
   let subObjLen = 0;
   let assignmentsObj = AssignmentGroup.assignments;
+  let earnedPoints = 0;
+  let totalPoints = getTotalPoints(ag); // get the total points from ag object
 
   // testing out objects
   console.log("assignment object:", assignmentsObj[0].id);
@@ -101,7 +98,7 @@ function getLearnerData(course, ag, submissions) {
   for (let i = 0; i < subLen; i++) {
     let obj = submissions[i]; // object in ary
     let objLen = Object.keys(obj).length; // length of each object
-    // console.log("object length", objLen);
+    // console.log("object length", objLen); // length
 
     for (let j = 0; j < objLen; j++) {}
   }
@@ -124,6 +121,9 @@ function getLearnerData(course, ag, submissions) {
 
   return result;
 }
+
+// get the total points
+function getTotalPoints(ag) {}
 
 // get the grade average across all assignments
 function gradeAverage(pointsEarned, maxPoints) {
@@ -152,7 +152,17 @@ function errorHandling(points_possible) {
   }
 }
 
+// filter out unique keys or values
+function uniqueKeys(ary, key) {
+  let uniqueSet = new Set(ary.map((i) => i[key]));
+  return Array.from(uniqueSet);
+}
+
 // running code
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
-console.log(result);
+// console.log(result);
+
+// worry about points scored
+// group weight isn't used for anything
+// Use filter, sort or map to make it easier
