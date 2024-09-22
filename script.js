@@ -92,8 +92,11 @@ function getLearnerData(course, ag, submissions) {
   // testing out objects
   // console.log("assignment object:", assignmentsObj[0].id);
   let assignmentObjectLen = assignmentsObj.length;
-  let courseIdAry = [];
-  let submissionAry = [];
+  const resultAry = [];
+
+  // sorting the array
+  submissions.sort((a, b) => a.LearnerSubmissions - b.LearnerSubmissions);
+  console.log("submissions", submissions);
 
   // Loop over the ary of objects
   for (let i = 0; i < subLen; i++) {
@@ -101,26 +104,29 @@ function getLearnerData(course, ag, submissions) {
     let objLen = Object.keys(obj).length; // length of each object
     // console.log("object length", objLen); // length
 
-    for (let j = 0; j < objLen; j++) {}
+    let j = 0;
+    while (j < objLen) {
+      j++;
+    }
   }
 
   // here, we would process this data to achieve the desired result.
-  const result = [
-    {
-      id: 125,
-      avg: 0.985, // (47 + 150) / (50 + 150)
-      1: 0.94, // 47 / 50
-      2: 1.0, // 150 / 150
-    },
-    {
-      id: 132,
-      avg: 0.82, // (39 + 125) / (50 + 150)
-      1: 0.78, // 39 / 50
-      2: 0.833, // late: (140 - 15) / 150
-    },
-  ];
+  // const result = [
+  //   {
+  //     id: 125,
+  //     avg: 0.985, // (47 + 150) / (50 + 150)
+  //     1: 0.94, // 47 / 50
+  //     2: 1.0, // 150 / 150
+  //   },
+  //   {
+  //     id: 132,
+  //     avg: 0.82, // (39 + 125) / (50 + 150)
+  //     1: 0.78, // 39 / 50
+  //     2: 0.833, // late: (140 - 15) / 150
+  //   },
+  // ];
 
-  return result;
+  return resultAry;
 }
 
 // get the total points
@@ -150,11 +156,14 @@ function deductPoints(totalPoints) {
 // error handling
 function errorHandling(points_possible) {
   try {
+    if (typeof points_possible !== "number" || Number.isNaN(points_possible)) {
+      throw new Error("Points must be a number.");
+    }
     if (points_possible <= 0) {
       throw new Error("Points cannot be at or below 0.");
     }
   } catch (e) {
-    console.log(`Cannot divide by 0 and below: ${e}`);
+    console.log(`The error: ${e}`);
   } finally {
     console.log(`Error checking finished.`);
   }
