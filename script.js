@@ -87,9 +87,10 @@ function getLearnerData(course, ag, submissions) {
   let assignmentsObj = AssignmentGroup.assignments;
   let earnedPoints = 0;
   let totalPoints = getTotalPoints(ag); // get the total points from ag object
+  // console.log(`The total points is ${totalPoints}`); // check if function works
 
   // testing out objects
-  console.log("assignment object:", assignmentsObj[0].id);
+  // console.log("assignment object:", assignmentsObj[0].id);
   let assignmentObjectLen = assignmentsObj.length;
   let courseIdAry = [];
   let submissionAry = [];
@@ -123,7 +124,13 @@ function getLearnerData(course, ag, submissions) {
 }
 
 // get the total points
-function getTotalPoints(ag) {}
+function getTotalPoints(ag) {
+  let hwAry = ag.assignments;
+  // console.log("hw ary: ", hwAry); // error check
+  return hwAry
+    .map((points) => points.points_possible)
+    .reduce((total, points) => (total += points), 0);
+}
 
 // get the grade average across all assignments
 function gradeAverage(pointsEarned, maxPoints) {
