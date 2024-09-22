@@ -82,7 +82,7 @@ const LearnerSubmissions = [
 
 // main function that returns an obj that contains student data
 function getLearnerData(course, ag, submissions) {
-  let subLen = submissions.length;
+  let subLen = submissions.length; // length of submissions
   let subObjLen = 0;
   let assignmentsObj = AssignmentGroup.assignments;
   let earnedPoints = 0;
@@ -154,8 +154,9 @@ function errorHandling(points_possible) {
       throw new Error("Points cannot be at or below 0.");
     }
   } catch (e) {
-    console.log(e);
+    console.log(`Cannot divide by 0 and below: ${e}`);
   } finally {
+    console.log(`Error checking finished.`);
   }
 }
 
