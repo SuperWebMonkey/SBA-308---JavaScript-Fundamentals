@@ -84,7 +84,6 @@ const LearnerSubmissions = [
 function getLearnerData(course, ag, submissions) {
   let subLen = submissions.length; // length of submissions
   let hwAry = AssignmentGroup.assignments;
-  const agaLen = hwAry.length; // length of the asignments
 
   // sorting the array
   submissions.sort((a, b) => a.LearnerSubmissions - b.LearnerSubmissions);
@@ -101,14 +100,15 @@ function getLearnerData(course, ag, submissions) {
 
   for (let i = 0; i < subLen; i++) {
     const subObj = submissions[i]; // object in ary
+    const agaLen = hwAry.length; // length of the asignments
     let studId = subObj.learner_id;
     let subDate = subObj.submission.submitted_at;
     let studScore = subObj.submission.score;
     let sub_id = subObj.assignment_id;
-    console.log(
-      `Student Id: ${studId}, ` +
-        `id: ${sub_id},submission date:${subDate}, student score: ${studScore}`
-    );
+    // console.log(
+    //   `Student Id: ${studId}, ` +
+    //     `id: ${sub_id},submission date:${subDate}, student score: ${studScore}`
+    // );
     let onTime = true;
 
     // error check
@@ -119,14 +119,27 @@ function getLearnerData(course, ag, submissions) {
       subObj.learner_id === submissions[i + 1].learner_id
         ? true
         : false;
-    console.log(nextIsSame);
+    // console.log(nextIsSame);
 
     while (j < agaLen) {
       let pointsPossible = hwAry[j].points_possible;
       const dueDate = hwAry[j].due_at;
       const hw_id = hwAry[j].id;
+      const course_id = ag.course_id;
 
       // error checking - use continues
+      let noError = errorHandling(
+        course.id,
+        course_id,
+        pointsPossible,
+        studScore
+      );
+
+      if (!noError) {
+        let objToRemove = hwAry.splice(j, 1);
+        // process.exit(1); // to exit the whole program
+        break;
+      }
 
       let sameId = sub_id === hw_id;
       if (sameId) {
@@ -138,7 +151,7 @@ function getLearnerData(course, ag, submissions) {
         // );
         hwObj[hw_id] = gradeAverage(studScore, pointsPossible);
         trackHwAry.push(hwObj);
-        console.log(trackHwAry);
+        // console.log(trackHwAry);
 
         // Check if the next value is the same id, otherwise add points and zero out for the next id
         if (nextIsSame) {
@@ -148,9 +161,7 @@ function getLearnerData(course, ag, submissions) {
           earnedPoints += studScore;
           totalPoints += pointsPossible;
           // Creating object and putting it into the result ary
-          console.log(earnedPoints, totalPoints);
           const average = gradeAverage(earnedPoints, totalPoints);
-          // console.log("average is", average);
 
           simpleObj = {
             id: studId,
@@ -162,9 +173,8 @@ function getLearnerData(course, ag, submissions) {
             ...trackHwAry.reduce((key, value) => ({ ...key, ...value }), {}),
           };
 
-          console.log("update obj", updateObj);
-
           resultAry.push(updateObj);
+
           // zeroing out values for the next student
           earnedPoints = 0;
           totalPoints = 0;
@@ -216,14 +226,21 @@ function deductPoints(days_late, totalPoints) {
 }
 
 // error handling
-function errorHandling(points_possible) {
+function errorHandling(courseId1, courseId2, points_possible, studScore) {
   let all_good = true;
+
   try {
+    if (courseId2 !== courseId1) {
+      throw new Error("Not the correct course");
+    }
     if (typeof points_possible !== "number" || Number.isNaN(points_possible)) {
       throw new Error("Points must be a number.");
     }
     if (points_possible <= 0) {
       throw new Error("Points cannot be at or below 0.");
+    }
+    if (studScore <= 0 || typeof points_possible !== "number") {
+      throw new Error("The student score is at or below zero or not a number");
     }
   } catch (e) {
     all_good = false;
@@ -231,14 +248,21 @@ function errorHandling(points_possible) {
   } finally {
     if (!all_good) {
       console.log("Error found.");
+      return false;
     }
   }
+
+  return true;
 }
+
+// testing error handling - use faulty code
+// course.id = 500;
+// AssignmentGroup.assignments[0].points_possible = 0; // testing for 0
 
 // running code
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
-console.log(result);
+console.log("The result:\n", result);
 
 // worry about points scored
 // group weight isn't used for anything
