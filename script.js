@@ -83,29 +83,45 @@ const LearnerSubmissions = [
 // main function that returns an obj that contains student data
 function getLearnerData(course, ag, submissions) {
   let subLen = submissions.length; // length of submissions
-  let subObjLen = 0;
-  let assignmentsObj = AssignmentGroup.assignments;
+  let hwAry = AssignmentGroup.assignments;
   let earnedPoints = 0;
   let totalPoints = getTotalPoints(ag); // get the total points from ag object
   // console.log(`The total points is ${totalPoints}`); // check if function works
 
   // testing out objects
-  // console.log("assignment object:", assignmentsObj[0].id);
-  let assignmentObjectLen = assignmentsObj.length;
   const resultAry = [];
+  const agaLen = hwAry.length; // length of the asignments
 
   // sorting the array
   submissions.sort((a, b) => a.LearnerSubmissions - b.LearnerSubmissions);
-  console.log("submissions", submissions);
+  // console.log("submissions", submissions);
 
   // Loop over the ary of objects
+  const simpleObj = {};
   for (let i = 0; i < subLen; i++) {
-    let obj = submissions[i]; // object in ary
-    let objLen = Object.keys(obj).length; // length of each object
-    // console.log("object length", objLen); // length
+    const subObj = submissions[i]; // object in ary
+    let studId = subObj.learner_id;
+    let subDate = subObj.submission.submitted_at;
+    let studScore = subObj.submission.score;
+    let sub_id = subObj.assignment_id;
+    console.log(
+      `Student Id: ${studId}, ` +
+        `id: ${sub_id},submission date:${subDate}, student score: ${studScore}`
+    );
+    let sameValue = true;
+    let onTime = true;
+
+    // error check
 
     let j = 0;
-    while (j < objLen) {
+    while (j < agaLen) {
+      let pointsPossible = hwAry[j].points_possible;
+      const dueDate = hwAry[j].due_at;
+      const hw_id = hwAry[j].id;
+      // console.log(hw_id);
+
+      // error checking
+
       j++;
     }
   }
@@ -150,11 +166,12 @@ function compareDate(submitDate, dueDate) {
 
 // find the point deduction
 function deductPoints(totalPoints) {
-  return totalPoints - 0.1 * totalPoints;
+  return 0.1 * totalPoints;
 }
 
 // error handling
 function errorHandling(points_possible) {
+  let all_good = true;
   try {
     if (typeof points_possible !== "number" || Number.isNaN(points_possible)) {
       throw new Error("Points must be a number.");
@@ -163,9 +180,12 @@ function errorHandling(points_possible) {
       throw new Error("Points cannot be at or below 0.");
     }
   } catch (e) {
+    all_good = false;
     console.log(`The error: ${e}`);
   } finally {
-    console.log(`Error checking finished.`);
+    if (!all_good) {
+      console.log("Error found.");
+    }
   }
 }
 
