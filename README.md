@@ -16,6 +16,6 @@ individual assignment
 - If the assignment was late, deducate by 10 percent of the total score
 
 ## Installation
-install visual studio code
-git clone https://github.com/SuperWebMonkey/SBA-308---JavaScript-Fundamentals.git
-run live server at the bottom right side
+- install visual studio code
+- git clone https://github.com/SuperWebMonkey/SBA-308---JavaScript-Fundamentals.git
+- run live server at the bottom right side
