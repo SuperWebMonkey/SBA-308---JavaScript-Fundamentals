@@ -109,9 +109,6 @@ function getLearnerData(course, ag, submissions) {
     //   `Student Id: ${studId}, ` +
     //     `id: ${sub_id},submission date:${subDate}, student score: ${studScore}`
     // );
-    let onTime = true;
-
-    // error check
 
     let j = 0;
     let nextIsSame =
@@ -149,13 +146,20 @@ function getLearnerData(course, ag, submissions) {
         //   pointsPossible,
         //   studScore / pointsPossible
         // );
-        hwObj[hw_id] = gradeAverage(studScore, pointsPossible);
-        trackHwAry.push(hwObj);
-        // console.log(trackHwAry);
+
+        // check if date is early
+        let isEarly = early(subDate, dueDate);
+        console.log(isEarly);
 
         // check date
-        let penalty = compareDate(trackHwAry[j].studScore, subDate, dueDate);
-        console.log(penalty);
+        let penalty = compareDate(pointsPossible, subDate, dueDate);
+        // console.log("pentalty", penalty);
+        studScore = studScore - penalty;
+        // console.log("student score:", studScore);
+
+        hwObj[hw_id] = gradeAverage(studScore, pointsPossible);
+        trackHwAry.push(hwObj);
+        // console.log(trackHwAry[j][hw_id]);
 
         // Check if the next value is the same id, otherwise add points and zero out for the next id
         if (nextIsSame) {
@@ -219,21 +223,34 @@ function gradeAverage(pointsEarned, maxPoints) {
   return Math.round(avg * 1000) / 1000;
 }
 
+function early(submitDate, dueDate) {
+  console.log(submitDate, ",", dueDate);
+  return submitDate < dueDate;
+}
+
 // compare the submission date and dueDate
-function compareDate(pointsEarned, submitDate, dueDate) {
+function compareDate(totalPoints, submitDate, dueDate) {
   let penalty = 0;
+  // console.log(
+  //   `points earned: ${totalPoints}, submit date: ${submitDate}, due date: ${dueDate}`
+  // );
   if (submitDate > dueDate) {
-    let diff = submitDate - dueDate;
-    let lateDays = diff / (1000 * 60 * 60 * 24);
-    penalty = penalty - deductPoints(lateDays, pointsEarned);
+    const date1 = new Date(submitDate);
+    const date2 = new Date(dueDate);
+    // let diff = date1 - date2;
+    // console.log("diff: ", diff);
+    // let lateDays = diff / (1000 * 60 * 60 * 24);
+    // console.log("late days:", lateDays);
+    penalty = penalty + deductPoints(totalPoints);
+    // console.log("penalty:", penalty);
     return penalty;
   }
   return penalty;
 }
 
 // find the point deduction
-function deductPoints(days_late, pointsEarned) {
-  return 0.1 * pointsEarned * days_late;
+function deductPoints(totalPoints) {
+  return 0.1 * totalPoints;
 }
 
 // error handling
