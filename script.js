@@ -153,6 +153,10 @@ function getLearnerData(course, ag, submissions) {
         trackHwAry.push(hwObj);
         // console.log(trackHwAry);
 
+        // check date
+        let penalty = compareDate(trackHwAry[j].studScore, subDate, dueDate);
+        console.log(penalty);
+
         // Check if the next value is the same id, otherwise add points and zero out for the next id
         if (nextIsSame) {
           earnedPoints += studScore;
@@ -216,13 +220,20 @@ function gradeAverage(pointsEarned, maxPoints) {
 }
 
 // compare the submission date and dueDate
-function compareDate(submitDate, dueDate) {
-  return submitDate > dueDate;
+function compareDate(pointsEarned, submitDate, dueDate) {
+  let penalty = 0;
+  if (submitDate > dueDate) {
+    let diff = submitDate - dueDate;
+    let lateDays = diff / (1000 * 60 * 60 * 24);
+    penalty = penalty - deductPoints(lateDays, pointsEarned);
+    return penalty;
+  }
+  return penalty;
 }
 
 // find the point deduction
-function deductPoints(days_late, totalPoints) {
-  return 0.1 * totalPoints * days_late;
+function deductPoints(days_late, pointsEarned) {
+  return 0.1 * pointsEarned * days_late;
 }
 
 // error handling
