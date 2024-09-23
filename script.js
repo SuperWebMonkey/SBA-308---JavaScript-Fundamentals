@@ -84,22 +84,20 @@ const LearnerSubmissions = [
 function getLearnerData(course, ag, submissions) {
   let subLen = submissions.length; // length of submissions
   let hwAry = AssignmentGroup.assignments;
-  // let totalPoints = getTotalPoints(ag); // get the total points from ag object
-  // console.log(`The total points is ${totalPoints}`); // check if function works
-
-  // testing out objects
-
   const agaLen = hwAry.length; // length of the asignments
 
   // sorting the array
   submissions.sort((a, b) => a.LearnerSubmissions - b.LearnerSubmissions);
   // console.log("submissions", submissions);
 
-  // Loop over the ary of objects
+  // Loop overing the ary of objects
+  // variables used for the loop
   const resultAry = [];
   let simpleObj = {};
   let earnedPoints = 0;
   let totalPoints = 0;
+  let trackHwAry = []; // keep track of hw id and avg score of a single test
+  let hwObj = {}; // track the obj
 
   for (let i = 0; i < subLen; i++) {
     const subObj = submissions[i]; // object in ary
@@ -128,27 +126,51 @@ function getLearnerData(course, ag, submissions) {
       const dueDate = hwAry[j].due_at;
       const hw_id = hwAry[j].id;
 
-      // console.log(hw_id);
-
       // error checking - use continues
 
       let sameId = sub_id === hw_id;
       if (sameId) {
+        // console.log(
+        //   "scores: ",
+        //   studScore,
+        //   pointsPossible,
+        //   studScore / pointsPossible
+        // );
+        hwObj[hw_id] = gradeAverage(studScore, pointsPossible);
+        trackHwAry.push(hwObj);
+        console.log(trackHwAry);
+
+        // Check if the next value is the same id, otherwise add points and zero out for the next id
         if (nextIsSame) {
           earnedPoints += studScore;
           totalPoints += pointsPossible;
         } else {
           earnedPoints += studScore;
           totalPoints += pointsPossible;
+          // Creating object and putting it into the result ary
+          console.log(earnedPoints, totalPoints);
+          const average = gradeAverage(earnedPoints, totalPoints);
+          // console.log("average is", average);
+
           simpleObj = {
             id: studId,
-            avg: gradeAverage(earnedPoints, totalPoints),
+            avg: average,
           };
-          resultAry.push(simpleObj);
-          // zeroing out values
+
+          let updateObj = {
+            ...simpleObj,
+            ...trackHwAry.reduce((key, value) => ({ ...key, ...value }), {}),
+          };
+
+          console.log("update obj", updateObj);
+
+          resultAry.push(updateObj);
+          // zeroing out values for the next student
           earnedPoints = 0;
           totalPoints = 0;
           simpleObj = {};
+          hwObj = {};
+          trackHwAry = [];
         }
         break;
       }
@@ -176,18 +198,11 @@ function getLearnerData(course, ag, submissions) {
   return resultAry;
 }
 
-// get the total points
-function getTotalPoints(ag) {
-  let hwAry = ag.assignments;
-  // console.log("hw ary: ", hwAry); // error check
-  return hwAry
-    .map((points) => points.points_possible)
-    .reduce((total, points) => (total += points), 0);
-}
-
 // get the grade average across all assignments
 function gradeAverage(pointsEarned, maxPoints) {
-  return Math.round(pointsEarned / maxPoints, 2);
+  // console.log("average is", pointsEarned / maxPoints);
+  let avg = pointsEarned / maxPoints;
+  return Math.round(avg * 1000) / 1000;
 }
 
 // compare the submission date and dueDate
@@ -223,7 +238,7 @@ function errorHandling(points_possible) {
 // running code
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
 
-// console.log(result);
+console.log(result);
 
 // worry about points scored
 // group weight isn't used for anything
