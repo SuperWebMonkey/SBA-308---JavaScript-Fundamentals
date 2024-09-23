@@ -98,7 +98,7 @@ function getLearnerData(course, ag, submissions) {
   let trackHwAry = []; // keep track of hw id and avg score of a single test
   let hwObj = {}; // track the obj
 
-  for (let i = 0; i < subLen; i++) {
+  outerLoop: for (let i = 0; i < subLen; i++) {
     const subObj = submissions[i]; // object in ary
     const agaLen = hwAry.length; // length of the asignments
     let studId = subObj.learner_id;
@@ -135,7 +135,16 @@ function getLearnerData(course, ag, submissions) {
       if (!noError) {
         let objToRemove = hwAry.splice(j, 1);
         // process.exit(1); // to exit the whole program
-        break;
+        break outerLoop;
+      }
+
+      // Set date
+      let isEarly = early(subDate, dueDate);
+      // console.log(isEarly);
+      // not working properly - suppose to skip early submission that is early by 90 days
+      if (isEarly) {
+        console.log(isEarly);
+        // continue outerLoop;
       }
 
       let sameId = sub_id === hw_id;
@@ -146,10 +155,6 @@ function getLearnerData(course, ag, submissions) {
         //   pointsPossible,
         //   studScore / pointsPossible
         // );
-
-        // check if date is early
-        let isEarly = early(subDate, dueDate);
-        console.log(isEarly);
 
         // check date
         let penalty = compareDate(pointsPossible, subDate, dueDate);
@@ -225,7 +230,13 @@ function gradeAverage(pointsEarned, maxPoints) {
 
 function early(submitDate, dueDate) {
   console.log(submitDate, ",", dueDate);
-  return submitDate < dueDate;
+  let sDate = new Date(submitDate);
+  let dDate = new Date(dueDate);
+  const diff = Math.abs(sDate - dDate); // find the difference in milliseconds
+  const days = diff / (1000 * 60 * 60 * 24); // convert to days
+  // console.log("diff in days:", days);
+
+  return submitDate < dueDate && days > 90;
 }
 
 // compare the submission date and dueDate
@@ -286,6 +297,8 @@ function errorHandling(courseId1, courseId2, points_possible, studScore) {
 // testing error handling - use faulty code
 // course.id = 500;
 // AssignmentGroup.assignments[0].points_possible = 0; // testing for 0
+
+console.log(AssignmentGroup.assignments, LearnerSubmissions);
 
 // running code
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
