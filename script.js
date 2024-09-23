@@ -84,12 +84,11 @@ const LearnerSubmissions = [
 function getLearnerData(course, ag, submissions) {
   let subLen = submissions.length; // length of submissions
   let hwAry = AssignmentGroup.assignments;
-  let earnedPoints = 0;
-  let totalPoints = getTotalPoints(ag); // get the total points from ag object
+  // let totalPoints = getTotalPoints(ag); // get the total points from ag object
   // console.log(`The total points is ${totalPoints}`); // check if function works
 
   // testing out objects
-  const resultAry = [];
+
   const agaLen = hwAry.length; // length of the asignments
 
   // sorting the array
@@ -97,7 +96,11 @@ function getLearnerData(course, ag, submissions) {
   // console.log("submissions", submissions);
 
   // Loop over the ary of objects
-  const simpleObj = {};
+  const resultAry = [];
+  let simpleObj = {};
+  let earnedPoints = 0;
+  let totalPoints = 0;
+
   for (let i = 0; i < subLen; i++) {
     const subObj = submissions[i]; // object in ary
     let studId = subObj.learner_id;
@@ -108,19 +111,47 @@ function getLearnerData(course, ag, submissions) {
       `Student Id: ${studId}, ` +
         `id: ${sub_id},submission date:${subDate}, student score: ${studScore}`
     );
-    let sameValue = true;
     let onTime = true;
 
     // error check
 
     let j = 0;
+    let nextIsSame =
+      i + 1 !== submissions.length &&
+      subObj.learner_id === submissions[i + 1].learner_id
+        ? true
+        : false;
+    console.log(nextIsSame);
+
     while (j < agaLen) {
       let pointsPossible = hwAry[j].points_possible;
       const dueDate = hwAry[j].due_at;
       const hw_id = hwAry[j].id;
+
       // console.log(hw_id);
 
-      // error checking
+      // error checking - use continues
+
+      let sameId = sub_id === hw_id;
+      if (sameId) {
+        if (nextIsSame) {
+          earnedPoints += studScore;
+          totalPoints += pointsPossible;
+        } else {
+          earnedPoints += studScore;
+          totalPoints += pointsPossible;
+          simpleObj = {
+            id: studId,
+            avg: gradeAverage(earnedPoints, totalPoints),
+          };
+          resultAry.push(simpleObj);
+          // zeroing out values
+          earnedPoints = 0;
+          totalPoints = 0;
+          simpleObj = {};
+        }
+        break;
+      }
 
       j++;
     }
@@ -165,8 +196,8 @@ function compareDate(submitDate, dueDate) {
 }
 
 // find the point deduction
-function deductPoints(totalPoints) {
-  return 0.1 * totalPoints;
+function deductPoints(days_late, totalPoints) {
+  return 0.1 * totalPoints * days_late;
 }
 
 // error handling
@@ -187,12 +218,6 @@ function errorHandling(points_possible) {
       console.log("Error found.");
     }
   }
-}
-
-// filter out unique keys or values
-function uniqueKeys(ary, key) {
-  let uniqueSet = new Set(ary.map((i) => i[key]));
-  return Array.from(uniqueSet);
 }
 
 // running code
